@@ -1,3 +1,5 @@
+import { RECIPE_RESPONSE_MOCK } from './mocks/recipe.mock';
+
 export function generateBody(image: string) {
   const body = {
     requests: [
@@ -17,7 +19,14 @@ export function generateBody(image: string) {
   return body;
 }
 
-async function callGoogleVisionAsync(image: string, apiUrl: string) {
+async function callGoogleVisionAsync(
+  image: string,
+  apiUrl: string,
+  mockData: boolean = false,
+) {
+  if (mockData) {
+    return Promise.resolve(RECIPE_RESPONSE_MOCK);
+  }
   const body = generateBody(image);
   const response = await fetch(apiUrl, {
     method: 'POST',
@@ -37,6 +46,6 @@ async function callGoogleVisionAsync(image: string, apiUrl: string) {
 
   return detectedText
     ? detectedText
-    : {text: "This image doesn't contain any text!"};
+    : { text: "This image doesn't contain any text!" };
 }
 export default callGoogleVisionAsync;

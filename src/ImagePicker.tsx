@@ -1,20 +1,20 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Image, Text, View} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
 import callGoogleVisionAsync from './api';
 
 // TODO: type https://github.com/goatandsheep/react-native-dotenv
 // @ts-ignore
-import {GOOGLE_API_TOKEN} from '@enviroment';
+import { GOOGLE_API_TOKEN } from '@enviroment';
+import { useRecipe } from './Context/useRecipe';
+import { useNavigationContainerRef } from '@react-navigation/native';
 
-export const ImagePickerComponent = () => {
-  const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
-  console.log(API_URL);
+export const ImagePickerComponent = ({ navigation }) => {
   const [image, setImage] = useState<ImagePicker.Image | undefined>(undefined);
-  const [response, setResponse] = useState<{product: string; price: number}[]>(
-    [],
-  );
+  const navigationRef = useNavigationContainerRef();
+
+  const recipeContext = useRecipe();
 
   const takeImage = async () => {
     const imgPicked: ImagePicker.Image = await ImagePicker.openCamera({
@@ -39,6 +39,9 @@ export const ImagePickerComponent = () => {
   };
 
   const convertToText = useCallback(async () => {
+    const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
+    console.log(API_URL);
+
     const base64 = image?.data;
     // const uri = imgPicked.path;
     if (base64) {
@@ -46,7 +49,8 @@ export const ImagePickerComponent = () => {
         base64,
         API_URL,
       );
-      console.log(responseData);
+      // console.log(responseData);
+      console.log('convertToText');
 
       const items = responseData.length;
       const products = responseData.slice(0, items / 2);
@@ -62,38 +66,31 @@ export const ImagePickerComponent = () => {
         };
       });
 
-      console.log(products, prices);
+      recipeContext.onUpdatePrices(prices);
+      recipeContext.onUpdateProducts(products);
+      recipeContext.setProductsWithPrices(productsWithPrices);
 
-      setResponse(productsWithPrices);
+      console.log(productsWithPrices);
+      navigation.navigate('Products');
+
+      // setResponse(productsWithPrices);
     }
-  }, [API_URL, image?.data]);
+  }, [image?.data, navigationRef, recipeContext]);
 
   useEffect(() => {
     convertToText();
-  }, [convertToText, image]);
+  }, [image]);
 
   return (
     <View>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take image" onPress={takeImage} />
-      {image && (
+      {/* {image && (
         <Image
-          source={{uri: image.path}}
-          style={{width: 400, height: 300, resizeMode: 'contain'}}
+          source={{ uri: image.path }}
+          style={{ width: 400, height: 300, resizeMode: 'contain' }}
         />
-      )}
-      {response.map((x, idx) => (
-        <View
-          key={idx}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}>
-          <Text>{x.product}</Text>
-          <Text>{x.price}</Text>
-        </View>
-      ))}
+      )} */}
     </View>
   );
 };

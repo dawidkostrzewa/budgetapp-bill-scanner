@@ -1,0 +1,20 @@
+export const RECIPE_PRODUCTS_MOCK = [
+  'LAYS CHIPSY PRYD',
+  'PIWO KSIAZECE CA',
+  'REKLAMOWKA LEW1A',
+  'TARCZYNSKI KABYD',
+  'POLEDWICA Z PIVD',
+];
+
+export const RECIPE_PRICES_MOCK = [
+  '1 x6,99 6,990',
+  '1 x4,85 4,85A',
+  '1 x0.49 0.49A',
+  '1 x3,99 3.990',
+  '0,21 x37.59 7.890',
+];
+
+export const RECIPE_RESPONSE_MOCK = [
+  ...RECIPE_PRODUCTS_MOCK,
+  ...RECIPE_PRICES_MOCK,
+];
