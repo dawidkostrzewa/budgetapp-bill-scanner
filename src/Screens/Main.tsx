@@ -1,8 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { ImagePickerComponent } from '../ImagePicker';
+import { ImagePickerComponent } from '../Components/ImagePicker';
 import { ProductsList } from './ProductsList';
+import { Screen } from './screens';
+import { Summary } from './Summary';
 
 const Stack = createNativeStackNavigator();
 
@@ -11,11 +13,12 @@ export const Main = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
+          name={Screen.MAIN}
           component={ImagePickerComponent}
           options={{ title: 'Welcome' }}
         />
-        <Stack.Screen name="Products" component={ProductsList} />
+        <Stack.Screen name={Screen.PRODUCTS} component={ProductsList} />
+        <Stack.Screen name={Screen.SUMMARY} component={Summary} />
       </Stack.Navigator>
     </NavigationContainer>
   );

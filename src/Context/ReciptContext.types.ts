@@ -1,13 +1,12 @@
 export interface ReciptContextValue {
-  products: string[];
-  prices: number[];
   productsWithPrices: Product[];
   setProductsWithPrices: (p: Product[]) => void;
-  onUpdatePrices: (prices: number[]) => void;
-  onUpdateProducts: (products: string[]) => void;
+  updateProduct: (p: Product) => void;
 }
 
 export interface Product {
+  index: number;
   product: string;
-  price: number;
+  price: string;
+  category?: string;
 }

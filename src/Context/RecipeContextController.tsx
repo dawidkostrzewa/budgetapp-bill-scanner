@@ -1,5 +1,4 @@
 import React, { ReactNode, useMemo, useState } from 'react';
-import { RECIPE_PRICES_MOCK, RECIPE_PRODUCTS_MOCK } from '../mocks/recipe.mock';
 import { ReciptContext } from './ReciptContext';
 import { Product } from './ReciptContext.types';
 
@@ -8,31 +7,39 @@ export const RecipeContextController = ({
 }: {
   children: ReactNode;
 }) => {
-  const [products, setProducts] = useState<string[]>(RECIPE_PRODUCTS_MOCK);
-  const [prices, setPrices] = useState<number[]>(
-    RECIPE_PRICES_MOCK as unknown as number[],
-  );
-
   const [productsWithPrices, setProductsWithPrices] = useState<Product[]>([]);
 
-  const onUpdateProducts = (newProducts: string[]) => {
-    setProducts(newProducts);
-  };
+  const updateProduct = ({
+    index,
+    // product,
+    price,
+    category,
+  }: Product) => {
+    setProductsWithPrices(prevProducts => {
+      const productToUpdate = prevProducts.find(p => p.index === index);
+      if (productToUpdate) {
+        productToUpdate.category = category;
+        // productToUpdate.product = productToUpdate.product;
+        productToUpdate.price = price;
 
-  const onUpdatePrices = (newPrices: number[]) => {
-    setPrices(newPrices);
+        return prevProducts.map(p => {
+          if (p.index === index) {
+            return productToUpdate;
+          }
+          return p;
+        });
+      }
+      return prevProducts;
+    });
   };
 
   const value = useMemo(
     () => ({
-      products,
-      prices,
       productsWithPrices,
       setProductsWithPrices,
-      onUpdateProducts,
-      onUpdatePrices,
+      updateProduct,
     }),
-    [prices, products, productsWithPrices],
+    [productsWithPrices],
   );
 
   return (

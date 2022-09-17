@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Button, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
-import callGoogleVisionAsync from './api';
+import callGoogleVisionAsync from '../api';
 
 // TODO: type https://github.com/goatandsheep/react-native-dotenv
 // @ts-ignore
 import { GOOGLE_API_TOKEN } from '@enviroment';
-import { useRecipe } from './Context/useRecipe';
+import { useRecipe } from '../Context/useRecipe';
 import { useNavigationContainerRef } from '@react-navigation/native';
+import { Screen } from '../Screens/screens';
 
 export const ImagePickerComponent = ({ navigation }) => {
   const [image, setImage] = useState<ImagePicker.Image | undefined>(undefined);
@@ -50,7 +51,7 @@ export const ImagePickerComponent = ({ navigation }) => {
         const responseData: Array<Array<{ description: string }>> =
           await callGoogleVisionAsync(base64!, API_URL, useMock);
 
-        const productsWithPrices = responseData.map(data => {
+        const productsWithPrices = responseData.map((data, idx) => {
           const lineArrLenth = data.length;
           const nameSections = data
             .slice(0, lineArrLenth - 3)
@@ -67,16 +68,16 @@ export const ImagePickerComponent = ({ navigation }) => {
             .map(item => item.replace(',', '.'));
 
           return {
+            index: idx,
             product: nameSections,
-            price: +(priceSections.length === 2
-              ? priceSections[1]
-              : priceSections[0]),
+            price:
+              priceSections.length === 2 ? priceSections[1] : priceSections[0],
           };
         });
         recipeContext.setProductsWithPrices(productsWithPrices);
 
         console.log(productsWithPrices);
-        navigation.navigate('Products');
+        navigation.navigate(Screen.PRODUCTS);
       }
     },
     [image?.data, navigation, recipeContext],

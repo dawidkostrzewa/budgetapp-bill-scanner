@@ -10,8 +10,8 @@
 
 import React from 'react';
 
-import { Main } from './src/Components/Main';
 import { RecipeContextController } from './src/Context/RecipeContextController';
+import { Main } from './src/Screens/Main';
 
 const App = () => {
   return (
