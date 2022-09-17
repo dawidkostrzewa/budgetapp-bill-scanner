@@ -38,53 +38,61 @@ export const ImagePickerComponent = ({ navigation }) => {
     setImage(imgPicked);
   };
 
-  const convertToText = useCallback(async () => {
-    const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
-    console.log(API_URL);
+  const convertToText = useCallback(
+    async (useMock?: boolean) => {
+      const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
+      console.log(API_URL);
 
-    const base64 = image?.data;
-    // const uri = imgPicked.path;
-    if (base64) {
-      const responseData: string[] = await callGoogleVisionAsync(
-        base64,
-        API_URL,
-      );
-      // console.log(responseData);
-      console.log('convertToText');
+      const base64 = image?.data;
+      // const uri = imgPicked.path;
+      if (base64 || useMock) {
+        //TOOD: fix base64 type
+        const responseData: Array<Array<{ description: string }>> =
+          await callGoogleVisionAsync(base64!, API_URL, useMock);
 
-      const items = responseData.length;
-      const products = responseData.slice(0, items / 2);
-      const prices = responseData.slice(items / 2).map(price => {
-        const splitted = price.split(' ');
-        return +splitted[splitted.length - 1].slice(0, -1).replace(',', '.');
-      });
+        const productsWithPrices = responseData.map(data => {
+          const lineArrLenth = data.length;
+          const nameSections = data
+            .slice(0, lineArrLenth - 3)
+            .map(item => item.description)
+            .join(' ')
+            .slice(0, 20);
+          const priceSections = data
+            .slice(lineArrLenth - 2)
+            .map(item => item.description)
+            .join(' ')
+            .slice(0, -1)
+            .split(' ')
+            .filter(item => !!item)
+            .map(item => item.replace(',', '.'));
 
-      const productsWithPrices = products.map((product, index) => {
-        return {
-          product,
-          price: prices[index],
-        };
-      });
+          return {
+            product: nameSections,
+            price: +(priceSections.length === 2
+              ? priceSections[1]
+              : priceSections[0]),
+          };
+        });
+        recipeContext.setProductsWithPrices(productsWithPrices);
 
-      recipeContext.onUpdatePrices(prices);
-      recipeContext.onUpdateProducts(products);
-      recipeContext.setProductsWithPrices(productsWithPrices);
-
-      console.log(productsWithPrices);
-      navigation.navigate('Products');
-
-      // setResponse(productsWithPrices);
-    }
-  }, [image?.data, navigationRef, recipeContext]);
+        console.log(productsWithPrices);
+        navigation.navigate('Products');
+      }
+    },
+    [image?.data, navigation, recipeContext],
+  );
 
   useEffect(() => {
-    convertToText();
+    if (image) {
+      convertToText();
+    }
   }, [image]);
 
   return (
     <View>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take image" onPress={takeImage} />
+      <Button title="Use mocks" onPress={() => convertToText(true)} />
       {/* {image && (
         <Image
           source={{ uri: image.path }}
