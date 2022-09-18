@@ -61,6 +61,13 @@ export const ProductsList = ({ navigation }: any) => {
     setProductsWithPrices(newProducts);
   }
 
+  const goBack = () => {
+    if (currentProduct > 0) {
+      setCurrentProduct(currentProduct - 1);
+      setSelectedMainCategory(undefined);
+    }
+  };
+
   return (
     <SafeAreaView
       // eslint-disable-next-line react-native/no-inline-styles
@@ -71,7 +78,7 @@ export const ProductsList = ({ navigation }: any) => {
         // eslint-disable-next-line react-native/no-inline-styles
         style={{
           flex: 1,
-          paddingVertical: 40,
+          paddingVertical: 10,
           paddingHorizontal: 16,
           // backgroundColor:"",
           position: 'relative',
@@ -121,6 +128,7 @@ export const ProductsList = ({ navigation }: any) => {
             );
           })}
         </ScrollView>
+        <Button title="Back" onPress={goBack} />
       </View>
     </SafeAreaView>
   );
