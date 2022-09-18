@@ -1,6 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
   Button,
+  FlatList,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -62,6 +64,10 @@ export const ProductsList = ({ navigation }: any) => {
   }
 
   const goBack = () => {
+    if (selectedMainCategory) {
+      setSelectedMainCategory(undefined);
+      return;
+    }
     if (currentProduct > 0) {
       setCurrentProduct(currentProduct - 1);
       setSelectedMainCategory(undefined);
@@ -70,55 +76,106 @@ export const ProductsList = ({ navigation }: any) => {
 
   return (
     <SafeAreaView
-      // eslint-disable-next-line react-native/no-inline-styles
       style={{
         flex: 1,
       }}>
       <View
-        // eslint-disable-next-line react-native/no-inline-styles
         style={{
           flex: 1,
           paddingVertical: 10,
           paddingHorizontal: 16,
-          // backgroundColor:"",
           position: 'relative',
         }}>
-        <Button
-          title="delete"
-          onPress={() =>
-            deleteCurrent(productsWithPrices[currentProduct].index)
-          }
-        />
-        <Text style={{ color: 'black', width: '100%' }}>
-          {productsWithPrices[currentProduct]?.product} -{' '}
-          {productsWithPrices[currentProduct]?.price}
-        </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={e => {
-            onPriceUpdate(currentProduct, e);
-          }}
-          value={productsWithPrices[currentProduct]?.price || '0.00'}
-          keyboardType="numeric"
-        />
-        <ScrollView>
-          {!selectedMainCategory &&
-            mainCategories.map((category, index) => (
-              <Button
-                key={index}
-                onPress={() => setSelectedMainCategory(category)}
-                title={category}
-              />
-            ))}
-          {selectedMainCategory &&
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Button title="Back" onPress={goBack} />
+          <Button
+            title="delete"
+            onPress={() =>
+              deleteCurrent(productsWithPrices[currentProduct].index)
+            }
+          />
+        </View>
+
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Text style={{ color: 'black', fontSize: 24, fontWeight: '600' }}>
+            {productsWithPrices[currentProduct]?.product}
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={e => {
+              onPriceUpdate(currentProduct, e);
+            }}
+            value={productsWithPrices[currentProduct]?.price || '0.00'}
+            keyboardType="numeric"
+          />
+        </View>
+
+        {/* <ScrollView> */}
+        {!selectedMainCategory && (
+          <FlatList
+            data={mainCategories}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  margin: 3,
+                  justifyContent: 'center',
+                }}>
+                <Button
+                  color={'red'}
+                  onPress={() => setSelectedMainCategory(item)}
+                  title={item}
+                />
+              </View>
+            )}
+            numColumns={3}
+            keyExtractor={item => item}
+          />
+        )}
+        {selectedMainCategory && (
+          <FlatList
+            data={getSubCategories(selectedMainCategory)}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  margin: 3,
+                  justifyContent: 'center',
+                }}>
+                <Button
+                  color={'#520303'}
+                  onPress={() => confirmProduct(currentProduct, item)}
+                  title={item}
+                />
+              </View>
+            )}
+            numColumns={2}
+            keyExtractor={item => item}
+          />
+        )}
+
+        {/* {selectedMainCategory &&
             getSubCategories(selectedMainCategory).map((category, index) => (
               <Button
                 key={index}
                 onPress={() => confirmProduct(currentProduct, category)}
                 title={category}
               />
-            ))}
-        </ScrollView>
+            ))} */}
+        {/* </ScrollView> */}
         <ScrollView>
           {productsWithPrices.map(p => {
             return (
@@ -128,7 +185,6 @@ export const ProductsList = ({ navigation }: any) => {
             );
           })}
         </ScrollView>
-        <Button title="Back" onPress={goBack} />
       </View>
     </SafeAreaView>
   );
@@ -144,9 +200,13 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    margin: 12,
+    marginTop: 12,
+    marginBottom: 12,
     borderWidth: 1,
     padding: 10,
+    fontSize: 20,
+    width: 80,
     color: 'black',
+    // width: '50%',
   },
 });
