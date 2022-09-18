@@ -8,24 +8,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { CATEGORIES } from '../api';
 import { Product } from '../Context/ReciptContext.types';
 import { useRecipe } from '../Context/useRecipe';
 import { Screen } from './screens';
 
-const CATEGORIES = [
-  'Bakery',
-  'Beverages',
-  'Breakfast',
-  'Canned & Jarred',
-  'Dairy, Eggs & Cheese',
-  'Frozen',
-  'Meat & Seafood',
-  'Produce',
-  'Snacks',
-  'Spices & Seasonings',
-];
-
-export const ProductsList = ({ navigation }) => {
+export const ProductsList = ({ navigation }: any) => {
   const { productsWithPrices, updateProduct, setProductsWithPrices } =
     useRecipe();
 
@@ -99,12 +87,14 @@ export const ProductsList = ({ navigation }) => {
           {CATEGORIES.map((category, index) => (
             <Button
               key={index}
-              onPress={() => confirmProduct(currentProduct, category)}
-              title={category}
+              onPress={() =>
+                confirmProduct(currentProduct, category.mainCategory)
+              }
+              title={category.mainCategory}
             />
           ))}
         </ScrollView>
-        <View style={styles.container}>
+        <ScrollView>
           {productsWithPrices.map(p => {
             return (
               <Text style={{ color: 'black', width: '100%' }} key={p.index}>
@@ -112,7 +102,7 @@ export const ProductsList = ({ navigation }) => {
               </Text>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
