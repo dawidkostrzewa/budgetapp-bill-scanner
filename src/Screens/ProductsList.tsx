@@ -13,11 +13,21 @@ import { Product } from '../Context/ReciptContext.types';
 import { useRecipe } from '../Context/useRecipe';
 import { Screen } from './screens';
 
+const getSubCategories = (mainCategory: string) => {
+  const category = CATEGORIES.find(c => c.mainCategory === mainCategory);
+  return category?.subCategories || [];
+};
+
 export const ProductsList = ({ navigation }: any) => {
   const { productsWithPrices, updateProduct, setProductsWithPrices } =
     useRecipe();
 
   const [currentProduct, setCurrentProduct] = React.useState(0);
+  const [selectedMainCategory, setSelectedMainCategory] = React.useState<
+    string | undefined
+  >(undefined);
+
+  const mainCategories = CATEGORIES.map(c => c.mainCategory);
 
   const confirmProduct = (cId: number, category: string) => {
     console.log('confirmProduct', cId, category);
@@ -31,6 +41,7 @@ export const ProductsList = ({ navigation }: any) => {
 
     if (currentProduct < productsWithPrices.length - 1) {
       setCurrentProduct(currentProduct + 1);
+      setSelectedMainCategory(undefined);
     } else {
       navigation.navigate(Screen.SUMMARY);
     }
@@ -84,15 +95,22 @@ export const ProductsList = ({ navigation }: any) => {
           keyboardType="numeric"
         />
         <ScrollView>
-          {CATEGORIES.map((category, index) => (
-            <Button
-              key={index}
-              onPress={() =>
-                confirmProduct(currentProduct, category.mainCategory)
-              }
-              title={category.mainCategory}
-            />
-          ))}
+          {!selectedMainCategory &&
+            mainCategories.map((category, index) => (
+              <Button
+                key={index}
+                onPress={() => setSelectedMainCategory(category)}
+                title={category}
+              />
+            ))}
+          {selectedMainCategory &&
+            getSubCategories(selectedMainCategory).map((category, index) => (
+              <Button
+                key={index}
+                onPress={() => confirmProduct(currentProduct, category)}
+                title={category}
+              />
+            ))}
         </ScrollView>
         <ScrollView>
           {productsWithPrices.map(p => {
