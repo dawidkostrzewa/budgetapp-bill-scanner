@@ -8,6 +8,7 @@ export const RecipeContextController = ({
   children: ReactNode;
 }) => {
   const [productsWithPrices, setProductsWithPrices] = useState<Product[]>([]);
+  const [recipeImage, setRecipeImage] = useState<string | undefined>(undefined);
 
   const updateProduct = ({
     index,
@@ -38,8 +39,10 @@ export const RecipeContextController = ({
       productsWithPrices,
       setProductsWithPrices,
       updateProduct,
+      recipeImage,
+      setRecipeImage,
     }),
-    [productsWithPrices],
+    [productsWithPrices, recipeImage],
   );
 
   return (

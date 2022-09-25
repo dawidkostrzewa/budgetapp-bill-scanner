@@ -26,6 +26,7 @@ export const ImagePickerComponent = ({ navigation }) => {
     });
 
     setImage(imgPicked);
+    recipeContext.setRecipeImage(imgPicked.path);
   };
 
   const pickImage = async () => {
@@ -37,6 +38,7 @@ export const ImagePickerComponent = ({ navigation }) => {
     });
 
     setImage(imgPicked);
+    recipeContext.setRecipeImage(imgPicked.path);
   };
 
   const convertToText = useCallback(

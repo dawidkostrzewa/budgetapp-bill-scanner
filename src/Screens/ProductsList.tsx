@@ -2,7 +2,9 @@
 import React from 'react';
 import {
   Button,
+  Dimensions,
   FlatList,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -21,8 +23,14 @@ const getSubCategories = (mainCategory: string) => {
 };
 
 export const ProductsList = ({ navigation }: any) => {
-  const { productsWithPrices, updateProduct, setProductsWithPrices } =
-    useRecipe();
+  const dimensions = Dimensions.get('window');
+  const imageHeight = Math.round((dimensions.width * 9) / 16);
+  const {
+    productsWithPrices,
+    updateProduct,
+    setProductsWithPrices,
+    recipeImage,
+  } = useRecipe();
 
   const [currentProduct, setCurrentProduct] = React.useState(0);
   const [selectedMainCategory, setSelectedMainCategory] = React.useState<
@@ -177,13 +185,28 @@ export const ProductsList = ({ navigation }: any) => {
             ))} */}
         {/* </ScrollView> */}
         <ScrollView>
-          {productsWithPrices.map(p => {
-            return (
-              <Text style={{ color: 'black', width: '100%' }} key={p.index}>
-                {p.product} - {p.price} - {p.category}
-              </Text>
-            );
-          })}
+          <View>
+            {productsWithPrices.map(p => {
+              return (
+                <Text
+                  onPress={() => deleteCurrent(p.index)}
+                  style={{ color: 'black', width: '100%' }}
+                  key={p.index}>
+                  {p.product} - {p.price} - {p.category}
+                </Text>
+              );
+            })}
+          </View>
+          {recipeImage && (
+            <Image
+              source={{ uri: recipeImage }}
+              style={{
+                width: dimensions.width,
+                height: imageHeight,
+                resizeMode: 'contain',
+              }}
+            />
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>
