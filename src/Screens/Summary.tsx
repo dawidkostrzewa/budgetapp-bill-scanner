@@ -1,11 +1,12 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { CATEGORIES } from '../api';
-import { Product } from '../Context/ReciptContext.types';
-import { useRecipe } from '../Context/useRecipe';
+import { Category } from '../Context/CategoriesContext/CategoriesContext.types';
+import { useCategories } from '../Context/CategoriesContext/useCategories';
+import { Product } from '../Context/RecipeContext/ReciptContext.types';
+import { useRecipe } from '../Context/RecipeContext/useRecipe';
 
-const resultOfCategories = (proucts: Product[]) => {
-  const catSummary = getAllSubCategories()
+const resultOfCategories = (cat: Category[], proucts: Product[]) => {
+  const catSummary = getAllSubCategories(cat)
     .map(c => {
       const productsInCategory = proucts.filter(p => p.category === c);
       const sum = productsInCategory.reduce(
@@ -22,17 +23,18 @@ const resultOfCategories = (proucts: Product[]) => {
   return catSummary;
 };
 
-const getAllSubCategories = () => {
-  const subCategories = CATEGORIES.map(c => c.subCategories).flat();
+const getAllSubCategories = (cat: Category[]) => {
+  const subCategories = cat.map(c => c.subCategories).flat();
   return subCategories;
 };
 
 export const Summary = () => {
   const { productsWithPrices } = useRecipe();
+  const { categories } = useCategories();
 
-  console.log('SUMMARY', resultOfCategories(productsWithPrices));
+  console.log('SUMMARY', resultOfCategories(categories, productsWithPrices));
 
-  const categoriesSummary = resultOfCategories(productsWithPrices);
+  const categoriesSummary = resultOfCategories(categories, productsWithPrices);
   const total = categoriesSummary.reduce((acc, c) => acc + +c.summary, 0);
   return (
     <View>

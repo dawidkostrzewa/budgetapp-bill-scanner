@@ -7,7 +7,7 @@ import callGoogleVisionAsync from '../api';
 // TODO: type https://github.com/goatandsheep/react-native-dotenv
 // @ts-ignore
 import { GOOGLE_API_TOKEN } from '@enviroment';
-import { useRecipe } from '../Context/useRecipe';
+import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { useNavigationContainerRef } from '@react-navigation/native';
 import { Screen } from '../Screens/screens';
 

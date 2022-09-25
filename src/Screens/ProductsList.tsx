@@ -12,13 +12,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { CATEGORIES } from '../api';
-import { Product } from '../Context/ReciptContext.types';
-import { useRecipe } from '../Context/useRecipe';
+import { Category } from '../Context/CategoriesContext/CategoriesContext.types';
+import { useCategories } from '../Context/CategoriesContext/useCategories';
+import { Product } from '../Context/RecipeContext/ReciptContext.types';
+import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from './screens';
 
-const getSubCategories = (mainCategory: string) => {
-  const category = CATEGORIES.find(c => c.mainCategory === mainCategory);
+const getSubCategories = (cat: Category[], mainCategory: string) => {
+  const category = cat.find(c => c.mainCategory === mainCategory);
   return category?.subCategories || [];
 };
 
@@ -37,7 +38,9 @@ export const ProductsList = ({ navigation }: any) => {
     string | undefined
   >(undefined);
 
-  const mainCategories = CATEGORIES.map(c => c.mainCategory);
+  const { categories } = useCategories();
+
+  const mainCategories = categories.map(c => c.mainCategory);
 
   const confirmProduct = (cId: number, category: string) => {
     console.log('confirmProduct', cId, category);
@@ -154,7 +157,7 @@ export const ProductsList = ({ navigation }: any) => {
         )}
         {selectedMainCategory && (
           <FlatList
-            data={getSubCategories(selectedMainCategory)}
+            data={getSubCategories(categories, selectedMainCategory)}
             renderItem={({ item }) => (
               <View
                 style={{

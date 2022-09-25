@@ -1,5 +1,7 @@
 import { RECIPE_RESPONSE_MOCK } from './mocks/recipe.mock';
 
+const API_URL = 'https://budget-planning-backend-4wid.vercel.app';
+
 export function generateBody(image: string) {
   const body = {
     requests: [
@@ -75,148 +77,146 @@ async function callGoogleVisionAsync(
   console.log('textLines', textLines);
 
   return textLines;
-
-  // if (detectedText.text) {
-  //   return detectedText.text.split('\n');
-  // }
-
-  // return detectedText
-  //   ? detectedText
-  //   : { text: "This image doesn't contain any text!" };
 }
 export default callGoogleVisionAsync;
 
-export const CATEGORIES = [
-  {
-    mainCategory: 'Jedzenie',
-    subCategories: [
-      'Dom',
-      'Kawa/Herbata',
-      'Woda (butelkowana)',
-      'Alkohol',
-      'Słodyczne/Przekąski',
-      'Napoje (soczki + pepsi)',
-      'FastFood(pizza, burger, kebab, zamówione)',
-    ],
-  },
-  {
-    mainCategory: 'Mieszkanie / dom',
-    subCategories: [
-      'Czynsz',
-      'Rachunki',
-      'Akcesoria',
-      'Ręczniki papierowe',
-      'Środki do sprzątania (chemia)',
-      'Tabletki do zmywarki',
-      'Proszek/Tabletki do prania',
-    ],
-  },
-  {
-    mainCategory: 'Transport',
-    subCategories: [
-      'Paliwo',
-      'Przeglądy i naprawy auta',
-      'Utrzymanie auta (opony, myjnia, płyn do spryskiwaczy)',
-      'Ubezpieczenie auta',
-      'Bilety MPK',
-      'Bilety PKP, PKS',
-      'Taxi',
-      'Oplaty drogowe (autostrady/parkingi)',
-    ],
-  },
-  {
-    mainCategory: 'Telekomunikacja',
-    subCategories: ['Telefon', 'TV', 'Internet'],
-  },
-  {
-    mainCategory: 'Opieka zdrowotna',
-    subCategories: ['Lekarz', 'Badania', 'Lekarstwa', 'Inne'],
-  },
-  {
-    mainCategory: 'Ubranie',
-    subCategories: [
-      'Bielizna',
-      'Codziennie',
-      'Sportowe',
-      'Buty',
-      'Wyjściowe',
-      'Turystyczne',
-    ],
-  },
-  {
-    mainCategory: 'Higiena',
-    subCategories: [
-      'Chusteczki',
-      'Dezodorant',
-      'Papier toaletowy',
-      'Pasta do zębów',
-      'Perfumy',
-      'Kosmetyki',
-      'Mydło',
-    ],
-  },
-  {
-    mainCategory: 'Dzieci',
-    subCategories: [
-      'Artykuły szkolne',
-      'Dodatkowe zajęcia',
-      'Wpłaty na szkołę itp.',
-      'Zabawki / gry',
-      'Opieka nad dziećmi',
-      'Inne',
-    ],
-  },
-  {
-    mainCategory: 'Rozrywka',
-    subCategories: [
-      'Siłownia / Basen',
-      'Kino / Teatr',
-      'Wyjścia na miasto/impreza',
-      'Czasopisma',
-      'Książki',
-      'Hobby',
-      'Turystyka/Wakacje',
-      'Abonamenty',
-    ],
-  },
-  {
-    mainCategory: 'Inne wydatki',
-    subCategories: [
-      'Prezenty',
-      'Sprzęt (Telefon/Komputer/itp)',
-      'Oprogramowanie',
-      'Edukacja',
-      'Inne',
-    ],
-  },
-  {
-    mainCategory: 'Spłata długów',
-    subCategories: [
-      'Kredyt hipoteczny',
-      'Kredyt konsumpcyjny',
-      'Pożyczka osobista',
-      'Inne',
-    ],
-  },
-  {
-    mainCategory: 'Budowanie oszczędności',
-    subCategories: [
-      'Poduszka finansowa (oszczędnosci)',
-      'Fundusz: wakacje',
-      'Fundusz: Sprzęt elektroniczny',
-      'Fundusz: nadwyżka (dowolne rzeczy)',
-    ],
-  },
-  {
-    mainCategory: 'Inwestycje',
-    subCategories: ['Krypto', 'Fundusze inwestycyjne', 'ETF', 'Euro', 'Dolary'],
-  },
-  {
-    mainCategory: 'INNE 2',
-    subCategories: [],
-  },
-  {
-    mainCategory: 'INNE 3',
-    subCategories: [],
-  },
-];
+export const fetchCategories = async () => {
+  const response = await fetch(`${API_URL}/categories`);
+  const results = await response.json();
+  return results.expenseCategories;
+};
+
+// export const CATEGORIES = [
+//   {
+//     mainCategory: 'Jedzenie',
+//     subCategories: [
+//       'Dom',
+//       'Kawa/Herbata',
+//       'Woda (butelkowana)',
+//       'Alkohol',
+//       'Słodyczne/Przekąski',
+//       'Napoje (soczki + pepsi)',
+//       'FastFood(pizza, burger, kebab, zamówione)',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Mieszkanie / dom',
+//     subCategories: [
+//       'Czynsz',
+//       'Rachunki',
+//       'Akcesoria',
+//       'Ręczniki papierowe',
+//       'Środki do sprzątania (chemia)',
+//       'Tabletki do zmywarki',
+//       'Proszek/Tabletki do prania',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Transport',
+//     subCategories: [
+//       'Paliwo',
+//       'Przeglądy i naprawy auta',
+//       'Utrzymanie auta (opony, myjnia, płyn do spryskiwaczy)',
+//       'Ubezpieczenie auta',
+//       'Bilety MPK',
+//       'Bilety PKP, PKS',
+//       'Taxi',
+//       'Oplaty drogowe (autostrady/parkingi)',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Telekomunikacja',
+//     subCategories: ['Telefon', 'TV', 'Internet'],
+//   },
+//   {
+//     mainCategory: 'Opieka zdrowotna',
+//     subCategories: ['Lekarz', 'Badania', 'Lekarstwa', 'Inne'],
+//   },
+//   {
+//     mainCategory: 'Ubranie',
+//     subCategories: [
+//       'Bielizna',
+//       'Codziennie',
+//       'Sportowe',
+//       'Buty',
+//       'Wyjściowe',
+//       'Turystyczne',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Higiena',
+//     subCategories: [
+//       'Chusteczki',
+//       'Dezodorant',
+//       'Papier toaletowy',
+//       'Pasta do zębów',
+//       'Perfumy',
+//       'Kosmetyki',
+//       'Mydło',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Dzieci',
+//     subCategories: [
+//       'Artykuły szkolne',
+//       'Dodatkowe zajęcia',
+//       'Wpłaty na szkołę itp.',
+//       'Zabawki / gry',
+//       'Opieka nad dziećmi',
+//       'Inne',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Rozrywka',
+//     subCategories: [
+//       'Siłownia / Basen',
+//       'Kino / Teatr',
+//       'Wyjścia na miasto/impreza',
+//       'Czasopisma',
+//       'Książki',
+//       'Hobby',
+//       'Turystyka/Wakacje',
+//       'Abonamenty',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Inne wydatki',
+//     subCategories: [
+//       'Prezenty',
+//       'Sprzęt (Telefon/Komputer/itp)',
+//       'Oprogramowanie',
+//       'Edukacja',
+//       'Inne',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Spłata długów',
+//     subCategories: [
+//       'Kredyt hipoteczny',
+//       'Kredyt konsumpcyjny',
+//       'Pożyczka osobista',
+//       'Inne',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Budowanie oszczędności',
+//     subCategories: [
+//       'Poduszka finansowa (oszczędnosci)',
+//       'Fundusz: wakacje',
+//       'Fundusz: Sprzęt elektroniczny',
+//       'Fundusz: nadwyżka (dowolne rzeczy)',
+//     ],
+//   },
+//   {
+//     mainCategory: 'Inwestycje',
+//     subCategories: ['Krypto', 'Fundusze inwestycyjne', 'ETF', 'Euro', 'Dolary'],
+//   },
+//   {
+//     mainCategory: 'INNE 2',
+//     subCategories: [],
+//   },
+//   {
+//     mainCategory: 'INNE 3',
+//     subCategories: [],
+//   },
+// ];
