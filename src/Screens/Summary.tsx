@@ -1,52 +1,52 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import { Category } from '../Context/CategoriesContext/CategoriesContext.types';
-import { useCategories } from '../Context/CategoriesContext/useCategories';
-import { Product } from '../Context/RecipeContext/ReciptContext.types';
+import { Button, Text, View } from 'react-native';
+import { confirmRecipe } from '../api';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
 
-const resultOfCategories = (cat: Category[], proucts: Product[]) => {
-  const catSummary = getAllSubCategories(cat)
-    .map(c => {
-      const productsInCategory = proucts.filter(p => p.category === c);
-      const sum = productsInCategory.reduce(
-        (acc, p) => acc + Number(p.price),
-        0,
-      );
-      return {
-        category: c,
-        summary: sum.toFixed(2),
-      };
-    })
-    .filter(c => +c.summary > 0);
-
-  return catSummary;
-};
-
-const getAllSubCategories = (cat: Category[]) => {
-  const subCategories = cat.map(c => c.subCategories).flat();
-  return subCategories;
-};
-
 export const Summary = () => {
-  const { productsWithPrices } = useRecipe();
-  const { categories } = useCategories();
+  const { recipeSummary } = useRecipe();
+  const [isConfirmed, setIsConfirmed] = React.useState(false);
 
-  console.log('SUMMARY', resultOfCategories(categories, productsWithPrices));
+  const total = recipeSummary.reduce((acc, c) => acc + +c.summary, 0);
 
-  const categoriesSummary = resultOfCategories(categories, productsWithPrices);
-  const total = categoriesSummary.reduce((acc, c) => acc + +c.summary, 0);
+  const sendSummary = async () => {
+    const summary = recipeSummary.map(c => ({
+      row: c.category.row,
+      summary: c.summary,
+      categoryName: c.category.name,
+    }));
+
+    const data = {
+      summary,
+      date: new Date(),
+    };
+    console.log('SENED SUMMARY', JSON.stringify(data));
+
+    try {
+      const response = await confirmRecipe(data);
+      console.log(response);
+      setIsConfirmed(true);
+    } catch (e) {
+      console.log('ERROR', e);
+      setIsConfirmed(false);
+    }
+  };
+
   return (
     <View>
       <Text>Summary</Text>
-      {categoriesSummary.map((p, i) => {
+      {recipeSummary.map((p, i) => {
         return (
           <Text style={{ color: 'black', width: '100%' }} key={i}>
-            {p.category} - {p.summary}
+            {p.category.name} - {p.summary}
           </Text>
         );
       })}
       <Text style={{ color: 'black', width: '100%' }}>TOTAL: {total}</Text>
+      <Button onPress={sendSummary} title="CONFIRM" />
+      {isConfirmed && (
+        <Text style={{ color: 'black', width: '100%' }}>Confirmed</Text>
+      )}
     </View>
   );
 };

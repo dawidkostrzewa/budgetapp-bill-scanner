@@ -1,4 +1,7 @@
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState, useEffect } from 'react';
+import { resultOfCategories } from '../../utils/utils';
+import { CategorySumamry } from '../CategoriesContext/CategoriesContext.types';
+import { useCategories } from '../CategoriesContext/useCategories';
 import { ReciptContext } from './ReciptContext';
 import { Product } from './ReciptContext.types';
 
@@ -9,6 +12,9 @@ export const RecipeContextController = ({
 }) => {
   const [productsWithPrices, setProductsWithPrices] = useState<Product[]>([]);
   const [recipeImage, setRecipeImage] = useState<string | undefined>(undefined);
+  const [recipeSummary, setRecipeSummary] = useState<CategorySumamry[]>([]);
+
+  const { categories } = useCategories();
 
   const updateProduct = ({
     index,
@@ -34,6 +40,11 @@ export const RecipeContextController = ({
     });
   };
 
+  useEffect(() => {
+    const summary = resultOfCategories(categories, productsWithPrices);
+    setRecipeSummary(summary);
+  }, [categories, productsWithPrices]);
+
   const value = useMemo(
     () => ({
       productsWithPrices,
@@ -41,8 +52,9 @@ export const RecipeContextController = ({
       updateProduct,
       recipeImage,
       setRecipeImage,
+      recipeSummary,
     }),
-    [productsWithPrices, recipeImage],
+    [productsWithPrices, recipeImage, recipeSummary],
   );
 
   return (

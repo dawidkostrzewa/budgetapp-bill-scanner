@@ -19,7 +19,7 @@ import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from './screens';
 
 const getSubCategories = (cat: Category[], mainCategory: string) => {
-  const category = cat.find(c => c.mainCategory === mainCategory);
+  const category = cat.find(c => c.mainCategory.name === mainCategory);
   return category?.subCategories || [];
 };
 
@@ -146,13 +146,13 @@ export const ProductsList = ({ navigation }: any) => {
                 }}>
                 <Button
                   color={'red'}
-                  onPress={() => setSelectedMainCategory(item)}
-                  title={item}
+                  onPress={() => setSelectedMainCategory(item.name)}
+                  title={item.name}
                 />
               </View>
             )}
             numColumns={3}
-            keyExtractor={item => item}
+            keyExtractor={item => item.name}
           />
         )}
         {selectedMainCategory && (
@@ -168,13 +168,13 @@ export const ProductsList = ({ navigation }: any) => {
                 }}>
                 <Button
                   color={'#520303'}
-                  onPress={() => confirmProduct(currentProduct, item)}
-                  title={item}
+                  onPress={() => confirmProduct(currentProduct, item.name)}
+                  title={item.name}
                 />
               </View>
             )}
             numColumns={2}
-            keyExtractor={item => item}
+            keyExtractor={item => item.name}
           />
         )}
 
