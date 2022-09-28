@@ -1,5 +1,12 @@
 apply plugin: "com.android.application"
 
+project.ext.envConfigFiles = [
+  dev: ".env.dev",
+  production: ".env.production",
+]
+
+// apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 import com.android.build.OutputFile
 
 /**
@@ -131,7 +138,7 @@ def reactNativeArchitectures() {
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.budgetbillscanner"
@@ -140,7 +147,7 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
-
+        resValue "string", "build_config_package", "com.budgetbillscanner" 
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
             externalNativeBuild {
@@ -237,6 +244,19 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    flavorDimensions "appType"
+productFlavors {
+  dev {
+    dimension "appType"
+    applicationIdSuffix ".dev"
+    resValue "string", "app_name", "DEV BudgetBillScanner"
+  }
+  production {
+    dimension "appType"
+    applicationIdSuffix ".production"
+    resValue "string", "app_name", "BudgetBillScanner"
+  }
+}
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->

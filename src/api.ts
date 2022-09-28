@@ -1,6 +1,17 @@
+import { NativeModules } from 'react-native';
 import { RECIPE_RESPONSE_MOCK } from './mocks/recipe.mock';
 
-const API_URL = 'https://budget-planning-backend-4wid.vercel.app';
+export const AppUrls = {
+  dev: {
+    apiUrl: 'https://budget-planning-backend-dev.vercel.app',
+  },
+  production: {
+    apiUrl: 'https://budget-planning-backend-4wid.vercel.app',
+  },
+};
+
+const env = NativeModules.RNConfig.env as 'dev' | 'production';
+const API_URL = AppUrls[env].apiUrl;
 
 export function generateBody(image: string) {
   const body = {

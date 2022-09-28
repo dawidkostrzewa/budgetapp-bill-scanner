@@ -13,7 +13,7 @@ import { Screen } from '../Screens/screens';
 
 export const ImagePickerComponent = ({ navigation }) => {
   const [image, setImage] = useState<ImagePicker.Image | undefined>(undefined);
-  const navigationRef = useNavigationContainerRef();
+  // const navigationRef = useNavigationContainerRef();
 
   const recipeContext = useRecipe();
 
