@@ -8,10 +8,9 @@ import callGoogleVisionAsync from '../api';
 // @ts-ignore
 import { GOOGLE_API_TOKEN } from '@enviroment';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
-import { useNavigationContainerRef } from '@react-navigation/native';
 import { Screen } from '../Screens/screens';
 
-export const ImagePickerComponent = ({ navigation }) => {
+export const ImagePickerComponent = ({ navigation }: any) => {
   const [image, setImage] = useState<ImagePicker.Image | undefined>(undefined);
   // const navigationRef = useNavigationContainerRef();
 
@@ -93,19 +92,13 @@ export const ImagePickerComponent = ({ navigation }) => {
     if (image) {
       convertToText();
     }
-  }, [image]);
+  }, [convertToText, image]);
 
   return (
     <View>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take image" onPress={takeImage} />
       <Button title="Use mocks" onPress={() => convertToText(true)} />
-      {/* {image && (
-        <Image
-          source={{ uri: image.path }}
-          style={{ width: 400, height: 300, resizeMode: 'contain' }}
-        />
-      )} */}
     </View>
   );
 };

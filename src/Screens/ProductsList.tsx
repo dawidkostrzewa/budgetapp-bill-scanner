@@ -85,6 +85,18 @@ export const ProductsList = ({ navigation }: any) => {
     }
   };
 
+  const goNext = () => {
+    if (currentProduct < productsWithPrices.length - 1) {
+      setCurrentProduct(currentProduct + 1);
+      setSelectedMainCategory(undefined);
+    } else {
+      navigation.navigate(Screen.SUMMARY);
+    }
+  };
+
+  const nextBtnText =
+    currentProduct < productsWithPrices.length - 1 ? 'Next' : 'Summary';
+
   return (
     <SafeAreaView
       style={{
@@ -103,7 +115,15 @@ export const ProductsList = ({ navigation }: any) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Button title="Back" onPress={goBack} />
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <Button title="Back" onPress={goBack} />
+            <Button title={nextBtnText} onPress={goNext} />
+          </View>
           <Button
             title="delete"
             onPress={() =>
