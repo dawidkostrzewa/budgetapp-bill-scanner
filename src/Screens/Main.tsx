@@ -32,7 +32,7 @@ export const Main = () => {
         <Stack.Screen
           name={Screen.MAIN}
           component={Home}
-          options={{ title: 'Budget Bill Scanner' }}
+          options={{ title: 'Budget Bill Scanner', headerShown: false }}
         />
         <Stack.Screen name={Screen.PRODUCTS} component={ProductsList} />
         <Stack.Screen name={Screen.SUMMARY} component={Summary} />

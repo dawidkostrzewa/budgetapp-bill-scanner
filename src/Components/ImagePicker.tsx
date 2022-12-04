@@ -1,19 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Button, NativeModules, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
 import callGoogleVisionAsync from '../api';
 
-// TODO: type https://github.com/goatandsheep/react-native-dotenv
-// @ts-ignore
-import { GOOGLE_API_TOKEN } from '@enviroment';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from '../Screens/screens';
+import { convertGooleApiResponseToProducts } from '../utils/textRecognision.utils';
 
 export const ImagePickerComponent = ({ navigation }: any) => {
-  const [image, setImage] = useState<ImagePicker.Image | undefined>(undefined);
-  // const navigationRef = useNavigationContainerRef();
-
+  const env = NativeModules.RNConfig.env as 'dev' | 'production';
   const recipeContext = useRecipe();
 
   const takeImage = async () => {
@@ -24,81 +20,42 @@ export const ImagePickerComponent = ({ navigation }: any) => {
       compressImageQuality: 0.3,
     });
 
-    setImage(imgPicked);
     recipeContext.setRecipeImage(imgPicked.path);
-  };
-
-  const pickImage = async () => {
-    const imgPicked: ImagePicker.Image = await ImagePicker.openPicker({
-      cropping: true,
-      includeBase64: true,
-      freeStyleCropEnabled: true,
-      compressImageQuality: 0.3,
-    });
-
-    setImage(imgPicked);
-    recipeContext.setRecipeImage(imgPicked.path);
+    convertToText(imgPicked);
   };
 
   const convertToText = useCallback(
-    async (useMock?: boolean) => {
-      const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
-      console.log(API_URL);
+    async (img?: ImagePicker.Image, useMock?: boolean) => {
+      console.log('CONVERT');
 
-      const base64 = image?.data;
+      const base64 = img?.data;
       // const uri = imgPicked.path;
       if (base64 || useMock) {
         //TOOD: fix base64 type
         const responseData: Array<Array<{ description: string }>> =
-          await callGoogleVisionAsync(base64!, API_URL, useMock);
+          await callGoogleVisionAsync(base64!, useMock);
 
-        const productsWithPrices = responseData
-          .map((data, idx) => {
-            const lineArrLenth = data.length;
-            const nameSections = data
-              .slice(0, lineArrLenth - 3)
-              .map(item => item.description)
-              .join(' ')
-              .slice(0, 20);
-            const priceSections = data
-              .slice(lineArrLenth - 2)
-              .map(item => item.description)
-              .join(' ')
-              .slice(0, -1)
-              .split(' ')
-              .filter(item => !!item)
-              .map(item => item.replace(',', '.'));
+        const productsWithPrices =
+          convertGooleApiResponseToProducts(responseData);
 
-            return {
-              index: idx,
-              product: nameSections,
-              price:
-                priceSections.length === 2
-                  ? priceSections[1]
-                  : priceSections[0],
-            };
-          })
-          .filter(item => !!item);
         recipeContext.setProductsWithPrices(productsWithPrices);
 
         console.log(productsWithPrices);
         navigation.navigate(Screen.PRODUCTS);
       }
     },
-    [image?.data, navigation, recipeContext],
+    [navigation, recipeContext],
   );
-
-  useEffect(() => {
-    if (image) {
-      convertToText();
-    }
-  }, [convertToText, image]);
 
   return (
     <View>
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take image" onPress={takeImage} />
-      <Button title="Use mocks" onPress={() => convertToText(true)} />
+      {env === 'dev' && (
+        <Button
+          title="Use mocks"
+          onPress={() => convertToText(undefined, true)}
+        />
+      )}
     </View>
   );
 };

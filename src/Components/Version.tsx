@@ -11,5 +11,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     bottom: 5,
+    color: 'black',
   },
 });
