@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Button, NativeModules, StyleSheet, View } from 'react-native';
+import { NativeModules, StyleSheet, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
 import callGoogleVisionAsync from '../api';
@@ -8,6 +8,7 @@ import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from '../Screens/screens';
 import { convertGooleApiResponseToProducts } from '../utils/textRecognision.utils';
 import { Logo } from './Logo';
+import { Button } from 'react-native-paper';
 
 export const ImagePickerComponent = ({ navigation }: any) => {
   const env = NativeModules.RNConfig.env as 'dev' | 'production';
@@ -51,12 +52,13 @@ export const ImagePickerComponent = ({ navigation }: any) => {
   return (
     <View style={style.main}>
       <Logo />
-      <Button title="Take image" onPress={takeImage} />
+      <Button style={style.button} mode="contained" onPress={takeImage}>
+        Take image
+      </Button>
       {env === 'dev' && (
-        <Button
-          title="Use mocks"
-          onPress={() => convertToText(undefined, true)}
-        />
+        <Button mode="contained" onPress={() => convertToText(undefined, true)}>
+          Use mocks
+        </Button>
       )}
     </View>
   );
@@ -65,6 +67,13 @@ export const ImagePickerComponent = ({ navigation }: any) => {
 const style = StyleSheet.create({
   main: {
     backgroundColor: '#3F454F',
+    display: 'flex',
     height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    marginBottom: 20,
+    width: '70%',
   },
 });

@@ -6,6 +6,7 @@ module.exports = {
       {
         moduleName: '@enviroment',
       },
+      'react-native-paper/babel',
     ],
   ],
 };
