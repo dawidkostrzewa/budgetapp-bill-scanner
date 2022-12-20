@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Button, NativeModules, View } from 'react-native';
+import { Button, NativeModules, StyleSheet, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
 import callGoogleVisionAsync from '../api';
@@ -7,6 +7,7 @@ import callGoogleVisionAsync from '../api';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from '../Screens/screens';
 import { convertGooleApiResponseToProducts } from '../utils/textRecognision.utils';
+import { Logo } from './Logo';
 
 export const ImagePickerComponent = ({ navigation }: any) => {
   const env = NativeModules.RNConfig.env as 'dev' | 'production';
@@ -48,7 +49,8 @@ export const ImagePickerComponent = ({ navigation }: any) => {
   );
 
   return (
-    <View>
+    <View style={style.main}>
+      <Logo />
       <Button title="Take image" onPress={takeImage} />
       {env === 'dev' && (
         <Button
@@ -59,3 +61,10 @@ export const ImagePickerComponent = ({ navigation }: any) => {
     </View>
   );
 };
+
+const style = StyleSheet.create({
+  main: {
+    backgroundColor: '#3F454F',
+    height: '100%',
+  },
+});
