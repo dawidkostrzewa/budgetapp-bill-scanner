@@ -33,7 +33,11 @@ export const Main = () => {
           component={Home}
           options={{ title: 'Budget Bill Scanner', headerShown: false }}
         />
-        <Stack.Screen name={Screen.PRODUCTS} component={ProductsList} />
+        <Stack.Screen
+          name={Screen.PRODUCTS}
+          options={{ title: 'Products list' }}
+          component={ProductsList}
+        />
         <Stack.Screen name={Screen.SUMMARY} component={Summary} />
       </Stack.Navigator>
       <Version />

@@ -13,6 +13,11 @@ export const RecipeContextController = ({
   const [productsWithPrices, setProductsWithPrices] = useState<Product[]>([]);
   const [recipeImage, setRecipeImage] = useState<string | undefined>(undefined);
   const [recipeSummary, setRecipeSummary] = useState<CategorySumamry[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(false);
+
+  const handleProductsLoading = (isLoading: boolean) => {
+    setIsProductsLoading(isLoading);
+  };
 
   const { categories } = useCategories();
 
@@ -53,8 +58,10 @@ export const RecipeContextController = ({
       recipeImage,
       setRecipeImage,
       recipeSummary,
+      isProductsLoading,
+      handleProductsLoading,
     }),
-    [productsWithPrices, recipeImage, recipeSummary],
+    [isProductsLoading, productsWithPrices, recipeImage, recipeSummary],
   );
 
   return (

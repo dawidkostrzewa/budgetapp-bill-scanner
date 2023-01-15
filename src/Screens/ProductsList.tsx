@@ -1,10 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
-  Button,
-  Dimensions,
   FlatList,
-  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -12,11 +9,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {
+  ActivityIndicator,
+  IconButton,
+  MD2Colors,
+  MD3Colors,
+} from 'react-native-paper';
 import { Category } from '../Context/CategoriesContext/CategoriesContext.types';
 import { useCategories } from '../Context/CategoriesContext/useCategories';
 import { Product } from '../Context/RecipeContext/ReciptContext.types';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from './screens';
+import { Chip } from 'react-native-paper';
 
 const getSubCategories = (cat: Category[], mainCategory: string) => {
   const category = cat.find(c => c.mainCategory.name === mainCategory);
@@ -24,13 +28,11 @@ const getSubCategories = (cat: Category[], mainCategory: string) => {
 };
 
 export const ProductsList = ({ navigation }: any) => {
-  const dimensions = Dimensions.get('window');
-  const imageHeight = Math.round((dimensions.width * 9) / 16);
   const {
     productsWithPrices,
     updateProduct,
     setProductsWithPrices,
-    recipeImage,
+    isProductsLoading,
   } = useRecipe();
 
   const [currentProduct, setCurrentProduct] = React.useState(0);
@@ -94,8 +96,21 @@ export const ProductsList = ({ navigation }: any) => {
     }
   };
 
-  const nextBtnText =
-    currentProduct < productsWithPrices.length - 1 ? 'Next' : 'Summary';
+  const nextBtnIcon =
+    currentProduct < productsWithPrices.length - 1
+      ? 'arrow-right-bold'
+      : 'finance';
+
+  if (isProductsLoading) {
+    return (
+      <ActivityIndicator
+        size="large"
+        animating={true}
+        color={MD2Colors.red800}
+        style={{ marginTop: 20 }}
+      />
+    );
+  }
 
   return (
     <SafeAreaView
@@ -105,7 +120,6 @@ export const ProductsList = ({ navigation }: any) => {
       <View
         style={{
           flex: 1,
-          paddingVertical: 10,
           paddingHorizontal: 16,
           position: 'relative',
         }}>
@@ -121,11 +135,26 @@ export const ProductsList = ({ navigation }: any) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Button title="Back" onPress={goBack} />
-            <Button title={nextBtnText} onPress={goNext} />
+            {/* @ts-ignore - I dont need another props */}
+            <IconButton
+              icon="arrow-left-bold"
+              iconColor={MD3Colors.neutralVariant0}
+              size={25}
+              onPress={goBack}
+            />
+            {/* @ts-ignore - I dont need another props */}
+            <IconButton
+              icon={nextBtnIcon}
+              iconColor={MD3Colors.secondary0}
+              size={25}
+              onPress={goNext}
+            />
           </View>
-          <Button
-            title="delete"
+          {/* @ts-ignore - I dont need another props */}
+          <IconButton
+            icon="delete"
+            iconColor={MD3Colors.secondary0}
+            size={25}
             onPress={() =>
               deleteCurrent(productsWithPrices[currentProduct].index)
             }
@@ -164,14 +193,17 @@ export const ProductsList = ({ navigation }: any) => {
                   margin: 3,
                   justifyContent: 'center',
                 }}>
-                <Button
+                {/* <Button
                   color={'red'}
                   onPress={() => setSelectedMainCategory(item.name)}
                   title={item.name}
-                />
+                /> */}
+                <Chip onPress={() => setSelectedMainCategory(item.name)}>
+                  {item.name}
+                </Chip>
               </View>
             )}
-            numColumns={3}
+            numColumns={2}
             keyExtractor={item => item.name}
           />
         )}
@@ -186,14 +218,17 @@ export const ProductsList = ({ navigation }: any) => {
                   margin: 3,
                   justifyContent: 'center',
                 }}>
-                <Button
+                {/* <Button
                   color={'#520303'}
                   onPress={() => confirmProduct(currentProduct, item.name)}
                   title={item.name}
-                />
+                /> */}
+                <Chip onPress={() => confirmProduct(currentProduct, item.name)}>
+                  {item.name}
+                </Chip>
               </View>
             )}
-            numColumns={2}
+            numColumns={1}
             keyExtractor={item => item.name}
           />
         )}
@@ -220,16 +255,6 @@ export const ProductsList = ({ navigation }: any) => {
               );
             })}
           </View>
-          {recipeImage && (
-            <Image
-              source={{ uri: recipeImage }}
-              style={{
-                width: dimensions.width,
-                height: imageHeight,
-                resizeMode: 'contain',
-              }}
-            />
-          )}
         </ScrollView>
       </View>
     </SafeAreaView>

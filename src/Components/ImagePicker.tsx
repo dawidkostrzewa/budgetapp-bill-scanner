@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { NativeModules, StyleSheet, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
@@ -14,6 +14,7 @@ export const ImagePickerComponent = ({ navigation }: any) => {
   const env = NativeModules.RNConfig.env as 'dev' | 'production';
   const recipeContext = useRecipe();
 
+  // TODO: move to cameera utils
   const takeImage = async () => {
     const imgPicked: ImagePicker.Image = await ImagePicker.openCamera({
       cropping: true,
@@ -21,42 +22,54 @@ export const ImagePickerComponent = ({ navigation }: any) => {
       freeStyleCropEnabled: true,
       compressImageQuality: 0.3,
     });
-
-    recipeContext.setRecipeImage(imgPicked.path);
-    convertToText(imgPicked);
+    return imgPicked;
   };
 
-  const convertToText = useCallback(
-    async (img?: ImagePicker.Image, useMock?: boolean) => {
-      console.log('CONVERT');
+  const convertToText = async (img?: ImagePicker.Image, useMock?: boolean) => {
+    const base64 = img?.data;
+    if (base64 || useMock) {
+      //TOOD: fix base64 type
+      const responseData: Array<Array<{ description: string }>> =
+        await callGoogleVisionAsync(base64!, useMock);
 
-      const base64 = img?.data;
-      // const uri = imgPicked.path;
-      if (base64 || useMock) {
-        //TOOD: fix base64 type
-        const responseData: Array<Array<{ description: string }>> =
-          await callGoogleVisionAsync(base64!, useMock);
+      const productsWithPrices =
+        convertGooleApiResponseToProducts(responseData);
 
-        const productsWithPrices =
-          convertGooleApiResponseToProducts(responseData);
+      recipeContext.setProductsWithPrices(productsWithPrices);
 
-        recipeContext.setProductsWithPrices(productsWithPrices);
+      console.log(productsWithPrices);
+    }
+  };
 
-        console.log(productsWithPrices);
-        navigation.navigate(Screen.PRODUCTS);
-      }
-    },
-    [navigation, recipeContext],
-  );
+  const convertImageToRecipe = async () => {
+    try {
+      const image = await takeImage();
+      recipeContext.setRecipeImage(image.path);
+      recipeContext.handleProductsLoading(true);
+      navigation.navigate(Screen.PRODUCTS);
+      await convertToText(image);
+      recipeContext.handleProductsLoading(false);
+    } catch (e) {
+      navigation.navigate(Screen.MAIN);
+    }
+  };
+
+  const runMocks = () => {
+    convertToText(undefined, true);
+    navigation.navigate(Screen.PRODUCTS);
+  };
 
   return (
     <View style={style.main}>
       <Logo />
-      <Button style={style.button} mode="contained" onPress={takeImage}>
+      <Button
+        style={style.button}
+        mode="contained"
+        onPress={convertImageToRecipe}>
         Take image
       </Button>
       {env === 'dev' && (
-        <Button mode="contained" onPress={() => convertToText(undefined, true)}>
+        <Button mode="contained" onPress={runMocks}>
           Use mocks
         </Button>
       )}

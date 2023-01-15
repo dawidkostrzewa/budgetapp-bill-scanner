@@ -7,6 +7,8 @@ export interface ReciptContextValue {
   recipeImage: string | undefined;
   setRecipeImage: (img: string | undefined) => void;
   recipeSummary: CategorySumamry[];
+  handleProductsLoading: (loading: boolean) => void;
+  isProductsLoading: boolean;
 }
 
 export interface Product {
