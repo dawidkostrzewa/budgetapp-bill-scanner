@@ -29,3 +29,24 @@ export const getAllSubCategories = (cat: Category[]) => {
   const subCategories = cat.map(c => c.subCategories).flat();
   return subCategories;
 };
+// types of react native required it
+export const reactNativePaperRequiredProps = {
+  accessibilityLabelledBy: undefined,
+  accessibilityLanguage: undefined,
+  onPointerEnter: undefined,
+  onPointerEnterCapture: undefined,
+  onPointerLeave: undefined,
+  onPointerLeaveCapture: undefined,
+  onPointerMove: undefined,
+  onPointerMoveCapture: undefined,
+  onPointerCancel: undefined,
+  onPointerCancelCapture: undefined,
+  onPointerDown: undefined,
+  onPointerDownCapture: undefined,
+  onPointerUp: undefined,
+  onPointerUpCapture: undefined,
+  onHoverIn: undefined,
+  onHoverOut: undefined,
+  delayHoverIn: undefined,
+  delayHoverOut: undefined,
+};

@@ -38,7 +38,11 @@ export const Main = () => {
           options={{ title: 'Products list' }}
           component={ProductsList}
         />
-        <Stack.Screen name={Screen.SUMMARY} component={Summary} />
+        <Stack.Screen
+          name={Screen.SUMMARY}
+          options={{ title: 'Summary' }}
+          component={Summary}
+        />
       </Stack.Navigator>
       <Version />
     </NavigationContainer>

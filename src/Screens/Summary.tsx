@@ -1,16 +1,28 @@
 import React from 'react';
-import { Button, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { confirmRecipe } from '../api';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
-import { ActivityIndicator, MD2Colors } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  DataTable,
+  MD2Colors,
+  Snackbar,
+} from 'react-native-paper';
+import { reactNativePaperRequiredProps } from '../utils/utils';
 
 export const Summary = () => {
   const { recipeSummary } = useRecipe();
   const [isConfirmed, setIsConfirmed] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | undefined>(undefined);
+  const [toastVisible, setToastVisible] = React.useState(false);
 
-  const total = recipeSummary.reduce((acc, c) => acc + +c.summary, 0);
+  const total = parseFloat(
+    recipeSummary.reduce((acc, c) => acc + +c.summary, 0).toString(),
+  ).toFixed(2);
+
+  const onDismissSnackBar = () => setToastVisible(false);
 
   const sendSummary = async () => {
     const summary = recipeSummary.map(c => ({
@@ -39,21 +51,51 @@ export const Summary = () => {
       setError(JSON.stringify(e));
       setIsConfirmed(false);
     }
+    setToastVisible(true);
     setIsLoading(false);
   };
 
   return (
     <View>
-      <Text>Summary</Text>
-      {recipeSummary.map((p, i) => {
-        return (
-          <Text style={{ color: 'black', width: '100%' }} key={i}>
-            {p.category.name} - {p.summary}
-          </Text>
-        );
-      })}
-      <Text style={{ color: 'black', width: '100%' }}>TOTAL: {total}</Text>
-      <Button onPress={sendSummary} title="CONFIRM" />
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title>
+            <Text style={styles.cellTitle}>Category</Text>
+          </DataTable.Title>
+          <DataTable.Title>
+            <Text style={styles.cellTitle}>Price</Text>
+          </DataTable.Title>
+        </DataTable.Header>
+        {recipeSummary.map(p => {
+          return (
+            <DataTable.Row
+              key={p.category.name}
+              {...reactNativePaperRequiredProps}>
+              <DataTable.Cell>
+                <Text style={styles.text}>{p.category.name}</Text>
+              </DataTable.Cell>
+              <DataTable.Cell>
+                <Text style={styles.text}>{p.summary} PLN</Text>
+              </DataTable.Cell>
+            </DataTable.Row>
+          );
+        })}
+        <DataTable.Row {...reactNativePaperRequiredProps}>
+          <DataTable.Cell>
+            <Text style={styles.total}>Total</Text>
+          </DataTable.Cell>
+          <DataTable.Cell>
+            <Text style={styles.total}>{total} PLN</Text>
+          </DataTable.Cell>
+        </DataTable.Row>
+      </DataTable>
+
+      <Button
+        onPress={sendSummary}
+        mode="contained"
+        style={{ marginTop: 20, paddingHorizontal: 20 }}>
+        Send
+      </Button>
       {isLoading && (
         <ActivityIndicator
           size="large"
@@ -62,10 +104,31 @@ export const Summary = () => {
           style={{ marginTop: 20 }}
         />
       )}
-      {isConfirmed && (
-        <Text style={{ color: 'black', width: '100%' }}>Confirmed</Text>
-      )}
-      {error && <Text style={{ color: 'black', width: '100%' }}>{error}</Text>}
+
+      <Snackbar
+        style={styles.toast}
+        visible={toastVisible}
+        onDismiss={onDismissSnackBar}>
+        {isConfirmed && <Text style={styles.text}>Recipe added to sheet</Text>}
+        {error && <Text style={styles.text}>{error}</Text>}
+      </Snackbar>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  total: { fontSize: 20, fontWeight: '500', color: 'darkred' },
+  text: {
+    color: 'black',
+  },
+  cellTitle: {
+    fontSize: 18,
+    color: 'black',
+    fontWeight: '500',
+  },
+  toast: {
+    position: 'absolute',
+    top: '100%',
+    width: '100%',
+  },
+});

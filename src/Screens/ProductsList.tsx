@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {
   ActivityIndicator,
+  DataTable,
   IconButton,
   MD2Colors,
   MD3Colors,
@@ -21,6 +22,7 @@ import { Product } from '../Context/RecipeContext/ReciptContext.types';
 import { useRecipe } from '../Context/RecipeContext/useRecipe';
 import { Screen } from './screens';
 import { Chip } from 'react-native-paper';
+import { reactNativePaperRequiredProps } from '../utils/utils';
 
 const getSubCategories = (cat: Category[], mainCategory: string) => {
   const category = cat.find(c => c.mainCategory.name === mainCategory);
@@ -135,22 +137,22 @@ export const ProductsList = ({ navigation }: any) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            {/* @ts-ignore - I dont need another props */}
             <IconButton
               icon="arrow-left-bold"
               iconColor={MD3Colors.neutralVariant0}
               size={25}
               onPress={goBack}
+              {...reactNativePaperRequiredProps}
             />
-            {/* @ts-ignore - I dont need another props */}
             <IconButton
               icon={nextBtnIcon}
               iconColor={MD3Colors.secondary0}
               size={25}
               onPress={goNext}
+              {...reactNativePaperRequiredProps}
             />
           </View>
-          {/* @ts-ignore - I dont need another props */}
+
           <IconButton
             icon="delete"
             iconColor={MD3Colors.secondary0}
@@ -158,6 +160,7 @@ export const ProductsList = ({ navigation }: any) => {
             onPress={() =>
               deleteCurrent(productsWithPrices[currentProduct].index)
             }
+            {...reactNativePaperRequiredProps}
           />
         </View>
 
@@ -181,79 +184,83 @@ export const ProductsList = ({ navigation }: any) => {
           />
         </View>
 
-        {/* <ScrollView> */}
-        {!selectedMainCategory && (
-          <FlatList
-            data={mainCategories}
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'column',
-                  margin: 3,
-                  justifyContent: 'center',
-                }}>
-                {/* <Button
-                  color={'red'}
-                  onPress={() => setSelectedMainCategory(item.name)}
-                  title={item.name}
-                /> */}
-                <Chip onPress={() => setSelectedMainCategory(item.name)}>
-                  {item.name}
-                </Chip>
-              </View>
-            )}
-            numColumns={2}
-            keyExtractor={item => item.name}
-          />
-        )}
-        {selectedMainCategory && (
-          <FlatList
-            data={getSubCategories(categories, selectedMainCategory)}
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'column',
-                  margin: 3,
-                  justifyContent: 'center',
-                }}>
-                {/* <Button
-                  color={'#520303'}
-                  onPress={() => confirmProduct(currentProduct, item.name)}
-                  title={item.name}
-                /> */}
-                <Chip onPress={() => confirmProduct(currentProduct, item.name)}>
-                  {item.name}
-                </Chip>
-              </View>
-            )}
-            numColumns={1}
-            keyExtractor={item => item.name}
-          />
-        )}
+        <View>
+          {!selectedMainCategory && (
+            <FlatList
+              data={mainCategories}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    margin: 3,
+                    justifyContent: 'center',
+                  }}>
+                  <Chip onPress={() => setSelectedMainCategory(item.name)}>
+                    {item.name}
+                  </Chip>
+                </View>
+              )}
+              numColumns={2}
+              keyExtractor={item => item.name}
+            />
+          )}
 
-        {/* {selectedMainCategory &&
-            getSubCategories(selectedMainCategory).map((category, index) => (
-              <Button
-                key={index}
-                onPress={() => confirmProduct(currentProduct, category)}
-                title={category}
-              />
-            ))} */}
-        {/* </ScrollView> */}
+          {selectedMainCategory && (
+            <FlatList
+              data={getSubCategories(categories, selectedMainCategory)}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    margin: 3,
+                    justifyContent: 'center',
+                  }}>
+                  <Chip
+                    onPress={() => confirmProduct(currentProduct, item.name)}>
+                    {item.name}
+                  </Chip>
+                </View>
+              )}
+              numColumns={1}
+              keyExtractor={item => item.name}
+            />
+          )}
+        </View>
         <ScrollView>
           <View>
-            {productsWithPrices.map(p => {
-              return (
-                <Text
-                  onPress={() => deleteCurrent(p.index)}
-                  style={{ color: 'black', width: '100%' }}
-                  key={p.index}>
-                  {p.product} - {p.price} - {p.category}
-                </Text>
-              );
-            })}
+            <DataTable>
+              <DataTable.Header>
+                <DataTable.Title style={{ width: '50%' }}>
+                  <Text style={styles.cellTitle}> Name </Text>
+                </DataTable.Title>
+                <DataTable.Title style={{ width: '10%' }}>
+                  <Text style={styles.cellTitle}> Price </Text>
+                </DataTable.Title>
+                <DataTable.Title style={{ width: '40%' }}>
+                  <Text style={styles.cellTitle}> Category </Text>
+                </DataTable.Title>
+              </DataTable.Header>
+              {productsWithPrices.map(p => {
+                return (
+                  <DataTable.Row
+                    {...reactNativePaperRequiredProps}
+                    key={p.index}
+                    onPress={() => deleteCurrent(p.index)}>
+                    <DataTable.Cell style={{ width: '50%' }}>
+                      <Text style={styles.tableRow}> {p.product}</Text>
+                    </DataTable.Cell>
+                    <DataTable.Cell style={{ width: '10%' }}>
+                      <Text style={styles.tableRow}>{p.price}</Text>
+                    </DataTable.Cell>
+                    <DataTable.Cell style={{ width: '40%' }}>
+                      <Text style={styles.tableRow}> {p.category}</Text>
+                    </DataTable.Cell>
+                  </DataTable.Row>
+                );
+              })}
+            </DataTable>
           </View>
         </ScrollView>
       </View>
@@ -279,5 +286,13 @@ const styles = StyleSheet.create({
     width: 80,
     color: 'black',
     // width: '50%',
+  },
+  tableRow: {
+    color: 'black',
+  },
+  cellTitle: {
+    fontSize: 18,
+    color: 'black',
+    fontWeight: '500',
   },
 });
