@@ -18,7 +18,6 @@ export const Main = () => {
     (async () => {
       try {
         const categories = await fetchCategories();
-        // console.log(categories);
         setCategories(categories);
       } catch (e) {
         console.log('ERROR', e);
