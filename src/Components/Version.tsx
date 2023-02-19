@@ -2,7 +2,8 @@ import React from 'react';
 import { NativeModules, StyleSheet, Text } from 'react-native';
 
 export const Version = () => {
-  const env = NativeModules.RNConfig.env as 'dev' | 'production';
+  // const env = NativeModules.RNConfig.env as 'dev' | 'production';
+  const env = 'production';
   return <Text style={styles.text}>{env}</Text>;
 };
 

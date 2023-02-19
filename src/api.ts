@@ -13,10 +13,12 @@ export const AppUrls = {
   },
 };
 
-const env = NativeModules.RNConfig.env as 'dev' | 'production';
+// const env = NativeModules.RNConfig.env as 'dev' | 'production';
+const env = 'production';
 const API_URL = AppUrls[env].apiUrl;
 
-const GOOGLE_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
+const GOOGLE_API_URL =
+  'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCpE87ez68ePQRmOFwsH6AyhtqqUpUFa9o';
 
 export function generateBody(image: string) {
   const body = {
@@ -50,7 +52,9 @@ async function callGoogleVisionAsync(image: string, mockData: boolean = false) {
     },
     body: JSON.stringify(body),
   });
+
   const result = await response.json();
+  console.log('response', result);
   // const detectedText = result.responses[0].fullTextAnnotation;
 
   const { textAnnotations } = result.responses[0];

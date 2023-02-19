@@ -11,11 +11,18 @@ import { Logo } from './Logo';
 import { Button } from 'react-native-paper';
 
 export const ImagePickerComponent = ({ navigation }: any) => {
-  const env = NativeModules.RNConfig.env as 'dev' | 'production';
+  // const env = NativeModules.RNConfig.env as 'dev' | 'production';
+  const env = 'production';
   const recipeContext = useRecipe();
 
   // TODO: move to cameera utils
-  const takeImage = async () => {
+  const takeImage = async (picker?: boolean) => {
+    console.log('asdsa');
+
+    if (picker) {
+      return openPicked();
+    }
+
     const imgPicked: ImagePicker.Image = await ImagePicker.openCamera({
       cropping: true,
       includeBase64: true,
@@ -25,8 +32,38 @@ export const ImagePickerComponent = ({ navigation }: any) => {
     return imgPicked;
   };
 
+  const openPicked = async () => {
+    const imgPicked: ImagePicker.Image = await ImagePicker.openPicker({
+      cropping: true,
+      includeBase64: true,
+      freeStyleCropEnabled: true,
+      compressImageQuality: 0.3,
+      smartAlbums: [
+        'PhotoStream',
+        'Generic',
+        'Panoramas',
+        'Videos',
+        'Favorites',
+        'Timelapses',
+        'AllHidden',
+        'RecentlyAdded',
+        'Bursts',
+        'SlomoVideos',
+        'UserLibrary',
+        'SelfPortraits',
+        'Screenshots',
+        'DepthEffect',
+        'LivePhotos',
+        'Animated',
+        'LongExposure',
+      ],
+    });
+    return imgPicked;
+  };
+
   const convertToText = async (img?: ImagePicker.Image, useMock?: boolean) => {
     const base64 = img?.data;
+    console.log(img);
     if (base64 || useMock) {
       //TOOD: fix base64 type
       const responseData: Array<Array<{ description: string }>> =
@@ -41,15 +78,17 @@ export const ImagePickerComponent = ({ navigation }: any) => {
     }
   };
 
-  const convertImageToRecipe = async () => {
+  const convertImageToRecipe = async (picker?: boolean) => {
+    console.log('here');
     try {
-      const image = await takeImage();
+      const image = await takeImage(picker);
       recipeContext.setRecipeImage(image.path);
       recipeContext.handleProductsLoading(true);
       navigation.navigate(Screen.PRODUCTS);
       await convertToText(image);
       recipeContext.handleProductsLoading(false);
     } catch (e) {
+      console.log('error', e);
       navigation.navigate(Screen.MAIN);
     }
   };
@@ -65,8 +104,14 @@ export const ImagePickerComponent = ({ navigation }: any) => {
       <Button
         style={style.button}
         mode="contained"
-        onPress={convertImageToRecipe}>
+        onPress={() => convertImageToRecipe(false)}>
         Take image
+      </Button>
+      <Button
+        style={style.button}
+        mode="contained"
+        onPress={() => convertImageToRecipe(true)}>
+        Select from gallery
       </Button>
       {env === 'dev' && (
         <Button mode="contained" onPress={runMocks}>
