@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeModules, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import * as ImagePicker from 'react-native-image-crop-picker';
 import callGoogleVisionAsync from '../api';
@@ -9,16 +9,15 @@ import { Screen } from '../Screens/screens';
 import { convertGooleApiResponseToProducts } from '../utils/textRecognision.utils';
 import { Logo } from './Logo';
 import { Button } from 'react-native-paper';
+import { useConfig } from '../Context/ConfigContext/useConfig';
 
 export const ImagePickerComponent = ({ navigation }: any) => {
   // const env = NativeModules.RNConfig.env as 'dev' | 'production';
-  const env = 'production';
   const recipeContext = useRecipe();
 
+  const { env, setEnv } = useConfig();
   // TODO: move to cameera utils
   const takeImage = async (picker?: boolean) => {
-    console.log('asdsa');
-
     if (picker) {
       return openPicked();
     }
@@ -27,7 +26,7 @@ export const ImagePickerComponent = ({ navigation }: any) => {
       cropping: true,
       includeBase64: true,
       freeStyleCropEnabled: true,
-      compressImageQuality: 0.3,
+      compressImageQuality: 0.6,
     });
     return imgPicked;
   };
@@ -37,7 +36,7 @@ export const ImagePickerComponent = ({ navigation }: any) => {
       cropping: true,
       includeBase64: true,
       freeStyleCropEnabled: true,
-      compressImageQuality: 0.3,
+      compressImageQuality: 0.6,
       smartAlbums: [
         'PhotoStream',
         'Generic',
@@ -63,7 +62,7 @@ export const ImagePickerComponent = ({ navigation }: any) => {
 
   const convertToText = async (img?: ImagePicker.Image, useMock?: boolean) => {
     const base64 = img?.data;
-    console.log(img);
+    console.log(img?.size);
     if (base64 || useMock) {
       //TOOD: fix base64 type
       const responseData: Array<Array<{ description: string }>> =
@@ -79,7 +78,6 @@ export const ImagePickerComponent = ({ navigation }: any) => {
   };
 
   const convertImageToRecipe = async (picker?: boolean) => {
-    console.log('here');
     try {
       const image = await takeImage(picker);
       recipeContext.setRecipeImage(image.path);
@@ -113,6 +111,18 @@ export const ImagePickerComponent = ({ navigation }: any) => {
         onPress={() => convertImageToRecipe(true)}>
         Select from gallery
       </Button>
+      <Button
+        style={style.button}
+        mode="contained"
+        onPress={() => setEnv('dev')}>
+        Dev
+      </Button>
+      <Button
+        style={style.button}
+        mode="contained"
+        onPress={() => setEnv('production')}>
+        production
+      </Button>
       {env === 'dev' && (
         <Button mode="contained" onPress={runMocks}>
           Use mocks
@@ -129,9 +139,10 @@ const style = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   button: {
     marginBottom: 20,
-    width: '70%',
+    width: '100%',
   },
 });

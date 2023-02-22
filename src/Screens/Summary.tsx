@@ -10,6 +10,7 @@ import {
   Snackbar,
 } from 'react-native-paper';
 import { reactNativePaperRequiredProps } from '../utils/utils';
+import { useConfig } from '../Context/ConfigContext/useConfig';
 
 export const Summary = () => {
   const { recipeSummary } = useRecipe();
@@ -17,6 +18,8 @@ export const Summary = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | undefined>(undefined);
   const [toastVisible, setToastVisible] = React.useState(false);
+
+  const { env } = useConfig();
 
   const total = parseFloat(
     recipeSummary.reduce((acc, c) => acc + +c.summary, 0).toString(),
@@ -39,7 +42,7 @@ export const Summary = () => {
 
     try {
       setIsLoading(true);
-      const response = await confirmRecipe(data);
+      const response = await confirmRecipe(data, env);
       if (response.error) {
         setError(`${response.error} ${response.message}`);
         setIsLoading(false);

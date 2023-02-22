@@ -14,15 +14,18 @@ import { CategoriesContextController } from './src/Context/CategoriesContext/Cat
 import { RecipeContextController } from './src/Context/RecipeContext/RecipeContextController';
 import { Main } from './src/Screens/Main';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { ConfigContextController } from './src/Context/ConfigContext/ConfigContextController';
 const App = () => {
   return (
-    <CategoriesContextController>
-      <RecipeContextController>
-        <PaperProvider>
-          <Main />
-        </PaperProvider>
-      </RecipeContextController>
-    </CategoriesContextController>
+    <ConfigContextController>
+      <CategoriesContextController>
+        <RecipeContextController>
+          <PaperProvider>
+            <Main />
+          </PaperProvider>
+        </RecipeContextController>
+      </CategoriesContextController>
+    </ConfigContextController>
   );
 };
 
