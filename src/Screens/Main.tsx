@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { fetchCategories } from '../api';
 import { Version } from '../Components/Version';
 import { useCategories } from '../Context/CategoriesContext/useCategories';
+import { useConfig } from '../Context/ConfigContext/useConfig';
 import { Home } from './Home';
 import { ProductsList } from './ProductsList';
 import { Screen } from './screens';
@@ -13,17 +14,18 @@ const Stack = createNativeStackNavigator();
 
 export const Main = () => {
   const { setCategories } = useCategories();
+  const { env } = useConfig();
 
   useEffect(() => {
     (async () => {
       try {
-        const categories = await fetchCategories();
+        const categories = await fetchCategories(env);
         setCategories(categories);
       } catch (e) {
         console.log('ERROR', e);
       }
     })();
-  }, [setCategories]);
+  }, [setCategories, env]);
 
   return (
     <NavigationContainer>

@@ -1,8 +1,7 @@
-import { NativeModules } from 'react-native';
 import { RECIPE_RESPONSE_MOCK } from './mocks/recipe.mock';
 // TODO: type https://github.com/goatandsheep/react-native-dotenv
 // @ts-ignore
-import { GOOGLE_API_TOKEN } from '@enviroment';
+import Config from 'react-native-config';
 
 export const AppUrls = {
   dev: {
@@ -13,10 +12,9 @@ export const AppUrls = {
   },
 };
 
-const env = NativeModules.RNConfig.env as 'dev' | 'production';
-const API_URL = AppUrls[env].apiUrl;
-
-const GOOGLE_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_TOKEN}`;
+const GOOGLE_API_URL =
+  'https://vision.googleapis.com/v1/images:annotate?key=' +
+  Config.GOOGLE_API_TOKEN;
 
 export function generateBody(image: string) {
   const body = {
@@ -50,7 +48,9 @@ async function callGoogleVisionAsync(image: string, mockData: boolean = false) {
     },
     body: JSON.stringify(body),
   });
+
   const result = await response.json();
+  console.log('response', result);
   // const detectedText = result.responses[0].fullTextAnnotation;
 
   const { textAnnotations } = result.responses[0];
@@ -92,7 +92,8 @@ async function callGoogleVisionAsync(image: string, mockData: boolean = false) {
 }
 export default callGoogleVisionAsync;
 
-export const fetchCategories = async () => {
+export const fetchCategories = async (env: 'dev' | 'production') => {
+  const API_URL = AppUrls[env].apiUrl;
   try {
     const response = await fetch(`${API_URL}/categories`);
     const results = await response.json();
@@ -103,7 +104,8 @@ export const fetchCategories = async () => {
 };
 
 // TODO: type
-export const confirmRecipe = async (recipe: any) => {
+export const confirmRecipe = async (recipe: any, env: 'dev' | 'production') => {
+  const API_URL = AppUrls[env].apiUrl;
   const response = await fetch(`${API_URL}/budget/recipe`, {
     method: 'POST',
     headers: {

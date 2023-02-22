@@ -1,8 +1,9 @@
 import React from 'react';
-import { NativeModules, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { useConfig } from '../Context/ConfigContext/useConfig';
 
 export const Version = () => {
-  const env = NativeModules.RNConfig.env as 'dev' | 'production';
+  const { env } = useConfig();
   return <Text style={styles.text}>{env}</Text>;
 };
 
